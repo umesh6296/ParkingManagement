@@ -1,131 +1,148 @@
 package com.parking.usecase;
 
+import com.parking.dao.UserDAO;
 import com.parking.entity.User;
+import com.parking.exception.ParkingException;
 import com.parking.service.UserService;
 import com.parking.service.UserServiceImpl;
-import com.parking.exception.ParkingException;
-import java.util.List;
+import com.parking.usecase.ParkingLotUseCase;
+import com.parking.usecase.ParkingTicketUseCase;
+import com.parking.usecase.PaymentUseCase;
+import com.parking.usecase.VehicleUseCase;
+
 import java.util.Scanner;
 
 public class UserUseCase {
-    private UserService userService = new UserServiceImpl();
-    private Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final UserService userDAO = new UserServiceImpl();
+    private static final ParkingLotUseCase parkingLotUseCase = new ParkingLotUseCase();
+    private static final VehicleUseCase vehicleUseCase = new VehicleUseCase();
+    private static final ParkingTicketUseCase parkingTicketUseCase = new ParkingTicketUseCase();
+    private static final PaymentUseCase paymentUseCase = new PaymentUseCase();
 
-    public void addUser() {
-        System.out.print("Enter user name: ");
+    // Method to register a new user
+    public static void registerUser() {
+        System.out.println("Enter Name:");
         String name = scanner.nextLine();
-        System.out.print("Enter contact number: ");
+
+        System.out.println("Enter Contact Number:");
         String contactNumber = scanner.nextLine();
-        System.out.print("Enter email: ");
+
+        System.out.println("Enter Email:");
         String email = scanner.nextLine();
-        System.out.print("Enter password: ");
+
+        System.out.println("Enter Password:");
         String password = scanner.nextLine();
-        System.out.print("Enter role (U for User, A for Admin): ");
-        String role = scanner.nextLine();
-        System.out.print("Enter vehicle ID: ");
-        int vehicleId = scanner.nextInt();
 
-        scanner.nextLine(); // Consume newline
+        System.out.println("Enter Role (A for Admin, U for User):");
+        String role = scanner.nextLine().toUpperCase();
 
-        User user = new User(name, contactNumber, email, password, role, vehicleId);
-        try {
-            userService.addUser(user);
-            System.out.println("User added successfully!");
-        } catch (ParkingException e) {
-            System.out.println(e.getMessage());
+        if (!role.equals("A") && !role.equals("U")) {
+            System.out.println("Invalid role! Please enter 'A' for Admin or 'U' for User.");
+            return;
         }
-    }
 
-    public void login() {
-        System.out.println("Enter your Email: ");
-        String email = scanner.next();
-        System.out.println("Enter password: ");
-        String password = scanner.next();
+        User user = new User(name, contactNumber, email, password, role);
 
         try {
-            User user = userService.getUserByEmail(email, password);
-            if (user != null) {
-                System.out.println("Login successful!");
-                if (user.getRole().equals("U")) {
-                    showUserMenu();
-                } else if (user.getRole().equals("A")) {
-                    showAdminMenu();
-                }
-            } else {
-                System.out.println("User not found. Would you like to add a new user? (Y/N)");
-                String choice = scanner.next();
-                if (choice.equalsIgnoreCase("Y")) {
-                    addUser();
-                }
-            }
+            userDAO.addUser(user);
+            System.out.println("User registered successfully!");
         } catch (ParkingException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error registering user: " + e.getMessage());
         }
     }
-
-    private void showUserMenu() {
-        ParkingLotUseCase parkingLotUseCase = new ParkingLotUseCase();
-        VehicleUseCase vehicleUseCase = new VehicleUseCase();
-        UserUseCase userUseCase = new UserUseCase();
-        ParkingTicketUseCase parkingTicketUseCase = new ParkingTicketUseCase();
-        PaymentUseCase paymentUseCase = new PaymentUseCase();
-        System.out.println("========Park Vehicle============");
-            vehicleUseCase.parkVehicle();
-            System.out.println("========Generate Parking Ticket===========");
-            parkingTicketUseCase.generateParkingTicket();
-            System.out.println("=======Make Payment========");
-            paymentUseCase.makePayment();
-    }
-
-    private void showAdminMenu() {
+// Admin menu
+    public static void adminMenu(User admin) {
         while (true) {
-            System.out.println("Admin Menu:");
+            System.out.println("\n===== Admin Menu =====");
             System.out.println("1. Add Parking Lot");
             System.out.println("2. Display All Parking Lots");
             System.out.println("3. Display All Vehicles");
             System.out.println("4. Display All Users");
             System.out.println("5. Display All Parking Tickets");
             System.out.println("6. Display All Payments");
-            System.out.println("7. Exit");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            System.out.println("7. Logout");
+
+            System.out.print("Enter your choice: ");
+            int choice = Integer.parseInt(scanner.nextLine());
 
             switch (choice) {
                 case 1:
-                    // Add Parking Lot logic
+                    parkingLotUseCase.createParkingLot();
                     break;
                 case 2:
-                    // Display All Parking Lots logic
+                    parkingLotUseCase.displayAllParkingLots();
                     break;
                 case 3:
-                    // Display All Vehicles logic
+                    vehicleUseCase.displayAllVehicles();
                     break;
                 case 4:
-                    displayAllUsers();
+                    viewAllUsers();
                     break;
                 case 5:
-                    // Display All Parking Tickets logic
+                    parkingTicketUseCase.displayAllParkingTickets();
                     break;
                 case 6:
-                    // Display All Payments logic
+                    paymentUseCase.displayAllPayments();
                     break;
                 case 7:
+                    System.out.println("Logging out...");
                     return;
                 default:
-                    System.out.println("Invalid option. Please try again.");
+                    System.out.println("Invalid choice. Try again.");
             }
         }
     }
 
-    public void displayAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
-            for (User user : users) {
-                System.out.println(user.getName() + " - " + user.getEmail() + " - " + user.getRole());
+    // User menu
+    public static void userMenu(User user) {
+        while (true) {
+            System.out.println("===== User Menu =====");
+            System.out.println("1. Park Vehicle");
+            System.out.println("2. Generate Parking Ticket");
+            System.out.println("3. Make Payment");
+            System.out.println("4. Logout");
+
+            System.out.print("Enter your choice: ");
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            switch (choice) {
+                case 1:
+                    System.out.println("========Park Vehicle============");
+                    vehicleUseCase.parkVehicle();
+                    break;
+                case 2:
+                    System.out.println("========Generate Parking Ticket===========");
+                    parkingTicketUseCase.generateParkingTicket();
+                    break;
+                case 3:
+                    System.out.println("=======Make Payment========");
+                    paymentUseCase.makePayment();
+                    break;
+                case 4:
+                    System.out.println("Logging out...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
             }
-        } catch (ParkingException e) {
-            System.out.println(e.getMessage());
         }
     }
+
+    // Method for admin to view all users
+    public static void viewAllUsers() {
+        try {
+            userDAO.getAllUsers().forEach(user -> {
+                System.out.println("User ID: " + user.getUserId());
+                System.out.println("Name: " + user.getName());
+                System.out.println("Contact: " + user.getContactNumber());
+                System.out.println("Email: " + user.getEmail());
+                System.out.println("Role: " + user.getRole());
+                System.out.println("----------------------");
+            });
+        } catch (ParkingException e) {
+            System.out.println("Error fetching users: " + e.getMessage());
+        }
+    }
+
+
 }

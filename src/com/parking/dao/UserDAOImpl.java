@@ -13,13 +13,15 @@ import java.util.List;
 public class UserDAOImpl implements UserDAO {
     @Override
     public void addUser(User user) throws ParkingException {
-        String sql = "INSERT INTO users (name, contact_number, email, vehicle_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (name, contact_number, email,password, role) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getContactNumber());
             stmt.setString(3, user.getEmail());
-            stmt.setInt(4, user.getVehicleId());
+            stmt.setString(4, user.getPassword());
+            stmt.setString(5, user.getRole());
+
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new ParkingException("Error adding user: " + e.getMessage());
@@ -42,33 +44,49 @@ public class UserDAOImpl implements UserDAO {
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
                 user.setRole(rs.getString("role"));
-                user.setVehicleId(rs.getInt("vehicle_id"));
+
             }
         } catch (SQLException e) {
             throw new ParkingException("Error fetching user: " + e.getMessage());
         }
         return user;
     }
+
     @Override
-    public User getUserByEmail(String email,String password)throws ParkingException{
-        String sql = "SELECT * FROM users WHERE email=? and password = ?";
+    public User getUserByEmail(String email, String password) throws ParkingException {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         User user = null;
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, email);
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 System.out.println("User found..........");
+
+                // Assign user data from result set
+                user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setName(rs.getString("name"));
+                user.setContactNumber(rs.getString("contact_number"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+
+            } else {
+                System.out.println("Sorry, user not found......");
             }
-            else {
-                System.out.println("Sorry user can't found......");
-            }
+
         } catch (SQLException e) {
             throw new ParkingException("Error fetching user: " + e.getMessage());
         }
-        return user;
+
+        return user; // Return the user if found, otherwise return null
     }
+
 
     @Override
     public List<User> getAllUsers() throws ParkingException {
@@ -83,7 +101,7 @@ public class UserDAOImpl implements UserDAO {
                 user.setName(rs.getString("name"));
                 user.setContactNumber(rs.getString("contact_number"));
                 user.setEmail(rs.getString("email"));
-                user.setVehicleId(rs.getInt("vehicle_id"));
+
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -100,7 +118,7 @@ public class UserDAOImpl implements UserDAO {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getContactNumber());
             stmt.setString(3, user.getEmail());
-            stmt.setInt(4, user.getVehicleId());
+
             stmt.setInt(5, user.getUserId());
             stmt.executeUpdate();
         } catch (SQLException e) {

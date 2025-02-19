@@ -1,79 +1,73 @@
 package com.parking;
 
-import com.parking.usecase.*;
+import com.parking.entity.User;
+import com.parking.service.UserService;
+import com.parking.service.UserServiceImpl;
 
-import java.sql.SQLOutput;
+import com.parking.exception.ParkingException;
+import com.parking.usecase.UserUseCase;
+
 import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final UserService userService = new UserServiceImpl();
+
     public static void main(String[] args) {
-        ParkingLotUseCase parkingLotUseCase = new ParkingLotUseCase();
-        VehicleUseCase vehicleUseCase = new VehicleUseCase();
-        UserUseCase userUseCase = new UserUseCase();
-        ParkingTicketUseCase parkingTicketUseCase = new ParkingTicketUseCase();
-        PaymentUseCase paymentUseCase = new PaymentUseCase();
-        Scanner scanner = new Scanner(System.in);
-  //      userUseCase.login();
+        System.out.println("===== Welcome to Parking Management System =====");
 
         while (true) {
-            // Display the menu
-            System.out.println("===== Parking Management System =====");
-            System.out.println("1. Add Parking Lot");
-            System.out.println("2. Display All Parking Lots");
-            System.out.println("3. Park Vehicle");
-            System.out.println("4. Display All Vehicles");
-            System.out.println("5. Add User");
-            System.out.println("6. Display All Users");
-            System.out.println("7. Generate Parking Ticket");
-            System.out.println("8. Display All Parking Tickets");
-            System.out.println("9. Make Payment");
-            System.out.println("10. Display All Payments");
-            System.out.println("11. Exit");
-            System.out.print("Choose an option: ");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1:
-                    parkingLotUseCase.createParkingLot();
+                    login();
                     break;
                 case 2:
-                    parkingLotUseCase.displayAllParkingLots();
+                    UserUseCase.registerUser();
                     break;
                 case 3:
-                    vehicleUseCase.parkVehicle();
-                    break;
-                case 4:
-                    vehicleUseCase.displayAllVehicles();
-                    break;
-                case 5:
-                    userUseCase.addUser();
-                    break;
-                case 6:
-                    userUseCase.displayAllUsers();
-                    break;
-                case 7:
-                    parkingTicketUseCase.generateParkingTicket();
-                    break;
-                case 8:
-                    parkingTicketUseCase.displayAllParkingTickets();
-                    break;
-                case 9:
-                    paymentUseCase.makePayment();
-                    break;
-                case 10:
-                    paymentUseCase.displayAllPayments();
-                    break;
-                case 11:
-                    System.out.println("Exiting...");
-                    return;
+                    System.out.println("Exiting system...");
+                    System.exit(0);
                 default:
-                    System.out.println("Invalid choice!");
+                    System.out.println("Invalid choice. Try again.");
             }
+        }
+    }
 
-            // Display the menu again after each operation
-            System.out.println("\nPress Enter to continue...");
-            scanner.nextLine(); // Wait for user input
+    private static void login() {
+        System.out.print("Enter Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Enter Password: ");
+        String password = scanner.nextLine();
+
+        try {
+            User user = userService.getUserByEmail(email, password);
+            if (user != null) {
+                System.out.println("Login successful! Welcome, " + user.getName());
+
+                if (user.getRole().equalsIgnoreCase("A")) {
+                    UserUseCase.adminMenu(user);
+                } else if (user.getRole().equalsIgnoreCase("U")) {
+                    UserUseCase.userMenu(user);
+                }
+            } else {
+                System.out.println("User not found. Would you like to create a new account? (Y/N)");
+                String choice = scanner.next();
+                if (choice.equalsIgnoreCase("Y")) {
+                    UserUseCase.registerUser();
+                } else {
+                    System.out.println("Returning to main menu...");
+                }
+            }
+        } catch (ParkingException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }

@@ -8,14 +8,13 @@ public class User {
     private String password;
     private String role;
 
-    private int vehicleId;
 
-    public User(int userId, String name, String contactNumber, String email, int vehicleId,String password,String role) {
+    public User(int userId, String name, String contactNumber, String email,String password,String role) {
         this.userId = userId;
         this.name = name;
         this.contactNumber = contactNumber;
         this.email = email;
-        this.vehicleId = vehicleId;
+
         this.password=password;
         this.role=role;
 
@@ -23,21 +22,13 @@ public class User {
     public User(){
 
     }
-
-    public User(String name, String contactNumber, String email, int vehicleId) {
-        this.name = name;
-        this.contactNumber = contactNumber;
-        this.email = email;
-        this.vehicleId = vehicleId;
-    }
-
-    public User(String name, String contactNumber, String email, String password, String role, int vehicleId) {
+    public User(String name, String contactNumber, String email, String password, String role) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.password= password;
         this.role=role;
         this.email = email;
-        this.vehicleId = vehicleId;
+
     }
 
     public int getUserId() {
@@ -72,13 +63,7 @@ public class User {
         this.email = email;
     }
 
-    public int getVehicleId() {
-        return vehicleId;
-    }
 
-    public void setVehicleId(int vehicleId) {
-        this.vehicleId = vehicleId;
-    }
 
     public String getPassword() {
         return password;

@@ -4,12 +4,6 @@ import com.parking.dao.VehicleDAO;
 import com.parking.dao.VehicleDAOImpl;
 import com.parking.entity.Vehicle;
 import com.parking.exception.ParkingException;
-import com.parking.utility.DBUtil;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class VehicleServiceImpl implements VehicleService{

@@ -1,14 +1,10 @@
 package com.parking.usecase;
 
-import com.parking.dao.UserDAO;
 import com.parking.entity.User;
 import com.parking.exception.ParkingException;
 import com.parking.service.UserService;
 import com.parking.service.UserServiceImpl;
-import com.parking.usecase.ParkingLotUseCase;
-import com.parking.usecase.ParkingTicketUseCase;
-import com.parking.usecase.PaymentUseCase;
-import com.parking.usecase.VehicleUseCase;
+
 
 import java.util.Scanner;
 
@@ -54,14 +50,13 @@ public class UserUseCase {
 // Admin menu
     public static void adminMenu(User admin) {
         while (true) {
-            System.out.println("\n===== Admin Menu =====");
+            System.out.println("===== Admin Menu =====");
             System.out.println("1. Add Parking Lot");
-            System.out.println("2. Display All Parking Lots");
-            System.out.println("3. Display All Vehicles");
-            System.out.println("4. Display All Users");
-            System.out.println("5. Display All Parking Tickets");
-            System.out.println("6. Display All Payments");
-            System.out.println("7. Logout");
+            System.out.println("2. Display All Parking Lots, Vehicles, Users, Parking Tickets, Payments");
+            System.out.println("3. Delete Parking Lots, Vehicles, Users, Parking Tickets, Payments");
+            System.out.println("4. Update Vehicles, Users, Parking Tickets, Payments");
+            System.out.println("5. Show Parking Lots, Vehicles, Users, Parking Tickets, Payments");
+            System.out.println("6. Logout");
 
             System.out.print("Enter your choice: ");
             int choice = Integer.parseInt(scanner.nextLine());
@@ -71,23 +66,52 @@ public class UserUseCase {
                     parkingLotUseCase.createParkingLot();
                     break;
                 case 2:
-                    parkingLotUseCase.displayAllParkingLots();
-                    break;
-                case 3:
-                    vehicleUseCase.displayAllVehicles();
-                    break;
-                case 4:
-                    viewAllUsers();
-                    break;
-                case 5:
-                    parkingTicketUseCase.displayAllParkingTickets();
+                    boolean displayFlag = true;
+                    while (displayFlag) {
+                        System.out.println("Enter your choice for display details....");
+                        System.out.println("1. Display All Parking Lots");
+                        System.out.println("2. Display All Vehicles");
+                        System.out.println("3. Display All Users");
+                        System.out.println("4. Display All Parking Tickets");
+                        System.out.println("5. Display All Payments");
+                        System.out.println("6. Exit to Admin Menu");
+
+                        System.out.print("Enter your choice: ");
+                        int disChoice = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+
+                        switch (disChoice) {
+                            case 1:
+                                System.out.println("========All Parking Lots========");
+                                parkingLotUseCase.displayAllParkingLots();
+                                break;
+                            case 2:
+                                System.out.println("========All Vehicles========");
+                                vehicleUseCase.displayAllVehicles();
+                                break;
+                            case 3:
+                                System.out.println("=========All Users==========");
+                                viewAllUsers();
+                                break;
+                            case 4:
+                                System.out.println("========All Parking Tickets========");
+                                parkingTicketUseCase.displayAllParkingTickets();
+                                break;
+                            case 5:
+                                System.out.println("========All Parking Payments========");
+                                paymentUseCase.displayAllPayments();
+                                break;
+                            case 6:
+                                displayFlag = false;
+                                break;
+                            default:
+                                System.out.println("Invalid choice. Try again.");
+                        }
+                    }
                     break;
                 case 6:
-                    paymentUseCase.displayAllPayments();
-                    break;
-                case 7:
                     System.out.println("Logging out...");
-                    return;
+                    return; // Exit the admin menu loop
                 default:
                     System.out.println("Invalid choice. Try again.");
             }

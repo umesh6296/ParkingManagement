@@ -86,6 +86,31 @@ public class VehicleDAOImpl implements VehicleDAO {
         }
     }
 
+
+
+    @Override
+    public Vehicle getVehicleByPlateNumber(String plateNumber) throws ParkingException {
+        String sql = "SELECT * FROM vehicles WHERE plate_number = ?";
+        Vehicle vehicle = null;
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, plateNumber);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                vehicle = new Vehicle();
+                vehicle.setVehicleId(rs.getInt("vehicle_id"));
+                vehicle.setPlateNumber(rs.getString("plate_number"));
+                vehicle.setOwnerName(rs.getString("owner_name"));
+                vehicle.setVehicleType(rs.getString("vehicle_type"));
+                vehicle.setLotId(rs.getInt("lot_id"));
+            }
+        } catch (SQLException e) {
+            throw new ParkingException("Error fetching vehicle by plate number: " + e.getMessage());
+        }
+        return vehicle;
+    }
+
+
     @Override
     public void deleteVehicle(int vehicleId) throws ParkingException {
         String sql = "DELETE FROM vehicles WHERE vehicle_id = ?";

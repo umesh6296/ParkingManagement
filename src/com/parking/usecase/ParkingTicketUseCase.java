@@ -21,20 +21,36 @@ public class ParkingTicketUseCase {
         ParkingTicket parkingTicket = new ParkingTicket(vehicleId, lotId);
         try {
             parkingTicketService.addParkingTicket(parkingTicket);
-            System.out.println("Parking ticket generated successfully!");
+
+            // Fetch the ticket details after insertion
+            ParkingTicket savedTicket = parkingTicketService.getParkingTicketById(vehicleId);
+            if (savedTicket != null) {
+                System.out.println("Parking ticket generated successfully!");
+                System.out.println("Ticket ID: " + savedTicket.getTicketId());
+            } else {
+                System.out.println("Parking ticket generated, but unable to fetch ticket ID.");
+            }
+
         } catch (ParkingException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error generating parking ticket: " + e.getMessage());
         }
     }
 
     public void displayAllParkingTickets() {
         try {
             List<ParkingTicket> parkingTickets = parkingTicketService.getAllParkingTickets();
+            if (parkingTickets.isEmpty()) {
+                System.out.println("No parking tickets found.");
+                return;
+            }
+            System.out.println("===== Parking Tickets =====");
             for (ParkingTicket ticket : parkingTickets) {
-                System.out.println("Ticket ID: " + ticket.getTicketId() + " - Vehicle ID: " + ticket.getVehicleId());
+                System.out.println("Ticket ID: " + ticket.getTicketId() +
+                        " | Vehicle ID: " + ticket.getVehicleId() +
+                        " | Parking Lot ID: " + ticket.getLotId());
             }
         } catch (ParkingException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error fetching parking tickets: " + e.getMessage());
         }
     }
 }

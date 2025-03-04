@@ -1,6 +1,12 @@
 package com.parking.usecase;
 
+import com.parking.dao.ParkingTicketDAO;
+import com.parking.dao.ParkingTicketDAOImpl;
+import com.parking.entity.ParkingLot;
+import com.parking.entity.ParkingTicket;
 import com.parking.entity.Vehicle;
+import com.parking.service.ParkingLotService;
+import com.parking.service.ParkingLotServiceImpl;
 import com.parking.service.VehicleService;
 import com.parking.service.VehicleServiceImpl;
 import com.parking.exception.ParkingException;
@@ -9,6 +15,9 @@ import java.util.Scanner;
 
 public class VehicleUseCase {
     private VehicleService vehicleService = new VehicleServiceImpl();
+    private ParkingLotService parkingLotService=new ParkingLotServiceImpl();
+    private ParkingTicket parkingTicket=new ParkingTicket();
+    private ParkingLot parkingLot=new ParkingLot();
     private Scanner scanner = new Scanner(System.in);
 
     public void parkVehicle() {
@@ -18,18 +27,36 @@ public class VehicleUseCase {
         String ownerName = scanner.nextLine();
         System.out.print("Enter vehicle type: ");
         String vehicleType = scanner.nextLine();
-        System.out.print("Enter parking lot ID: ");
-        int lotId = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+
+        System.out.println("Choose Parking Lot ID from the available lots:");
+        int lotId = -1;
+        try {
+            List<ParkingLot> parkingLots = parkingLotService.getAllParkingLots();
+            for (ParkingLot p : parkingLots) {
+                System.out.println("ID: " + p.getLotId() + " - Parking Lot Name: " + p.getLotName());
+            }
+            lotId = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+        } catch (ParkingException e) {
+            System.out.println("Error fetching parking lots: " + e.getMessage());
+            return;
+        }
 
         Vehicle vehicle = new Vehicle(plateNumber, ownerName, vehicleType, lotId);
         try {
-            vehicleService.addVehicle(vehicle);
-            System.out.println("Vehicle parked successfully!");
+            vehicleService.addVehicle(vehicle); // Insert vehicle into DB
+            Vehicle savedVehicle = vehicleService.getVehicleByPlateNumber(plateNumber); // Fetch vehicle ID
+            if (savedVehicle != null) {
+                System.out.println("Vehicle parked successfully!");
+                System.out.println("Vehicle ID: " + savedVehicle.getVehicleId() + ", Parking Lot ID: " + lotId);
+            } else {
+                System.out.println("Error retrieving vehicle details.");
+            }
         } catch (ParkingException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error parking vehicle: " + e.getMessage());
         }
     }
+
 
     public void displayAllVehicles() {
         try {

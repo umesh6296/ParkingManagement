@@ -38,6 +38,11 @@ public class VehicleServiceImpl implements VehicleService{
     public void deleteVehicle(int vehicleId) throws ParkingException {
         vehicleDAO.deleteVehicle(vehicleId);
     }
+    @Override
+    public Vehicle getVehicleByPlateNumber(String plateNumber) throws ParkingException {
+        return vehicleDAO.getVehicleByPlateNumber(plateNumber);
+    }
+
 
 
 

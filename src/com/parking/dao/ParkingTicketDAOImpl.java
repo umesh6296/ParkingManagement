@@ -28,27 +28,29 @@ public class ParkingTicketDAOImpl implements ParkingTicketDAO {
     }
 
     @Override
-    public ParkingTicket getParkingTicketById(int ticketId) throws ParkingException {
-        String sql = "SELECT * FROM parking_tickets WHERE ticket_id = ?";
-        ParkingTicket parkingTicket = null;
+    public ParkingTicket getParkingTicketById(int vehicleId) throws ParkingException {
+        String sql = "SELECT * FROM parking_tickets WHERE vehicle_id = ?";
+        ParkingTicket ticket = null;
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, ticketId);
+            stmt.setInt(1, vehicleId);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                parkingTicket = new ParkingTicket();
-                parkingTicket.setTicketId(rs.getInt("ticket_id"));
-                parkingTicket.setVehicleId(rs.getInt("vehicle_id"));
-                parkingTicket.setLotId(rs.getInt("lot_id"));
-                parkingTicket.setEntryTime(rs.getTimestamp("entry_time"));
-                parkingTicket.setExitTime(rs.getTimestamp("exit_time"));
-                parkingTicket.setParkingFee(rs.getDouble("parking_fee"));
+                ticket = new ParkingTicket();
+                ticket.setTicketId(rs.getInt("ticket_id"));
+                ticket.setVehicleId(rs.getInt("vehicle_id"));
+                ticket.setLotId(rs.getInt("lot_id"));
+
             }
         } catch (SQLException e) {
             throw new ParkingException("Error fetching parking ticket: " + e.getMessage());
         }
-        return parkingTicket;
+
+        return ticket;
     }
+
 
     @Override
     public List<ParkingTicket> getAllParkingTickets() throws ParkingException {

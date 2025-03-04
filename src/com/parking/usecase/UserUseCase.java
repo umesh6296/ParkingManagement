@@ -96,36 +96,20 @@ public class UserUseCase {
 
     // User menu
     public static void userMenu(User user) {
-        while (true) {
-            System.out.println("===== User Menu =====");
-            System.out.println("1. Park Vehicle");
-            System.out.println("2. Generate Parking Ticket");
-            System.out.println("3. Make Payment");
-            System.out.println("4. Logout");
-
-            System.out.print("Enter your choice: ");
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            switch (choice) {
-                case 1:
-                    System.out.println("========Park Vehicle============");
-                    vehicleUseCase.parkVehicle();
-                    break;
-                case 2:
-                    System.out.println("========Generate Parking Ticket===========");
-                    parkingTicketUseCase.generateParkingTicket();
-                    break;
-                case 3:
-                    System.out.println("=======Make Payment========");
-                    paymentUseCase.makePayment();
-                    break;
-                case 4:
-                    System.out.println("Logging out...");
-                    return;
-                default:
-                    System.out.println("Invalid choice. Try again.");
-            }
+        System.out.println("Please park the vehicle....");
+        vehicleUseCase.parkVehicle();
+        System.out.println("Generate parking ticket");
+        parkingTicketUseCase.generateParkingTicket();
+        System.out.println("Please make payment....");
+        paymentUseCase.makePayment();
+        System.out.println("Enter 1 for exit");
+        int choice = Integer.parseInt(scanner.nextLine());
+        if(choice==1){
+            return;
+        }else {
+            System.out.println("Please enter 1 for exit...");
         }
+
     }
 
     // Method for admin to view all users

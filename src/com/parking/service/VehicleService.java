@@ -11,4 +11,5 @@ public interface VehicleService {
     List<Vehicle> getAllVehicles()throws ParkingException;
     void updateVehicle(Vehicle vehicle)throws ParkingException;
     void deleteVehicle(int vehicleId)throws ParkingException;
+    Vehicle getVehicleByPlateNumber(String plateNumber) throws ParkingException;
 }

@@ -21,7 +21,6 @@ public class UserDAOImpl implements UserDAO {
             stmt.setString(3, user.getEmail());
             stmt.setString(4, user.getPassword());
             stmt.setString(5, user.getRole());
-
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new ParkingException("Error adding user: " + e.getMessage());
@@ -65,8 +64,6 @@ public class UserDAOImpl implements UserDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                System.out.println("User found..........");
-
                 // Assign user data from result set
                 user = new User();
                 user.setUserId(rs.getInt("user_id"));

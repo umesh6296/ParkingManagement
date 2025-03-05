@@ -10,6 +10,11 @@ public class ParkingLot {
         this.lotName = lotName;
         this.capacity = capacity;
     }
+    public ParkingLot(String lotName, int capacity,int lotid){
+        this.lotName = lotName;
+        this.capacity = capacity;
+        this.lotId=lotid;
+    }
     public ParkingLot(){
 
     }

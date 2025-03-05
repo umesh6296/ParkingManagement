@@ -68,4 +68,26 @@ public class VehicleUseCase {
             System.out.println(e.getMessage());
         }
     }
+    public void findVehicleById() {
+        System.out.print("Enter Vehicle ID to find: ");
+        int vehicleId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle != null) {
+                System.out.println("Vehicle found:");
+                System.out.println("Vehicle ID: " + vehicle.getVehicleId());
+                System.out.println("Plate Number: " + vehicle.getPlateNumber());
+                System.out.println("Vehicle Type: "+vehicle.getVehicleType());
+                System.out.println("Parking Lot Id: "+vehicle.getLotId());
+                System.out.println("Owner: " + vehicle.getOwnerName());
+            } else {
+                System.out.println("Vehicle not found!");
+            }
+        } catch (ParkingException e) {
+            System.out.println("Error finding vehicle: " + e.getMessage());
+        }
+    }
+
 }

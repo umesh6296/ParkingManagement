@@ -53,4 +53,25 @@ public class ParkingTicketUseCase {
             System.out.println("Error fetching parking tickets: " + e.getMessage());
         }
     }
+    public void findParkingTicketById() {
+        System.out.print("Enter Parking Ticket ID to find: ");
+        int ticketId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        try {
+            ParkingTicket ticket = parkingTicketService.getParkingTicketById(ticketId);
+            if (ticket != null) {
+                System.out.println("Parking Ticket found:");
+                System.out.println("Ticket ID: " + ticket.getTicketId());
+                System.out.println("Vehicle ID: " + ticket.getVehicleId());
+                System.out.println("Parking Lot ID: " + ticket.getLotId());
+                System.out.println("Entry Time: " + ticket.getEntryTime());
+            } else {
+                System.out.println("Parking Ticket not found!");
+            }
+        } catch (ParkingException e) {
+            System.out.println("Error finding parking ticket: " + e.getMessage());
+        }
+    }
+
 }

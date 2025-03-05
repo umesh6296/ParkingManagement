@@ -29,6 +29,28 @@ public class PaymentUseCase {
         }
     }
 
+    public void findPaymentById() {
+        System.out.print("Enter Payment ID to find: ");
+        int paymentId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        try {
+            Payment payment = paymentService.getPaymentById(paymentId);
+            if (payment != null) {
+                System.out.println("Payment found:");
+                System.out.println("Payment ID: " + payment.getPaymentId());
+                System.out.println("Amount: " + payment.getPaymentAmount());
+                System.out.println("Payment Method: " + payment.getPaymentMethod());
+                System.out.println("Time: " + payment.getPaymentDate());
+            } else {
+                System.out.println("Payment not found!");
+            }
+        } catch (ParkingException e) {
+            System.out.println("Error finding payment: " + e.getMessage());
+        }
+    }
+
+
     public void displayAllPayments() {
         try {
             List<Payment> payments = paymentService.getAllPayments();

@@ -109,14 +109,13 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void updateUser(User user) throws ParkingException {
-        String sql = "UPDATE users SET name = ?, contact_number = ?, email = ?, vehicle_id = ? WHERE user_id = ?";
+        String sql = "UPDATE users SET contact_number = ?, email = ? WHERE user_id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getContactNumber());
-            stmt.setString(3, user.getEmail());
 
-            stmt.setInt(5, user.getUserId());
+            stmt.setString(1, user.getContactNumber());
+            stmt.setString(2, user.getEmail());
+            stmt.setInt(3, user.getUserId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new ParkingException("Error updating user: " + e.getMessage());
